@@ -27,40 +27,61 @@ app.post('/deductPoints',(req,res)=>{
 
     else
     {
+        tempPoints=reqpoints;
+        remainingPoints=reqpoints;
+        deductedPoints={};
+
         distributedPoints= distributedPoints.sort((a,b)=> { return new Date(a.time) - new Date(b.time) });
-        remaining=reqpoints;
-        deductedJSON={};
-        for(var i=0;i<distributedPoints.length;i++)
+        console.log("Sorted values --- ");
+        console.log(distributedPoints);
+
+        var ptr=0,ptr2=0;
+        modifiedDistributedPoints=distributedPoints;
+
+        while(remainingPoints>0)
         {
-            var deducted=0;
-            cp=distributedPoints[i];
-            if(cp.points-remaining>=0)
-            {
-                deducted=remaining;
-                console.log("the deducted thing = "+deducted);
-                distributedPoints[i].points-=deducted;
-            }
-            else
-            {
-                deducted=cp.points;
-                distributedPoints[i].points=0;
-            }
-            deducted*=parseInt(-1);
-            remaining+=deducted;
-            if(deductedJSON[cp.payer])
-                deductedJSON[cp.payer]+=deducted;
-            else
-                deductedJSON[cp.payer]=deducted;
+            currentPayer=distributedPoints[ptr];
+            currentDeduction=0;
 
-            if(remaining<=0)
+            if(totalPoints[currentPayer["points"]]-remainingPoints>=0)
             {
-                res.send(deductedJSON);
-                console.dir(distributedPoints, { depth: null });
-                console.log("remaining logs = "+distributedPoints);
-                break;
+                currentDeduction=currentPayer["points"]-remainingPoints;
+                console.log("name = "+currentPayer["payer"]);
+                console.log("So the remaining was not a -ve so... "+currentDeduction);
             }
 
-        }
+            else
+            {
+                currentDeduction=currentPayer["points"];
+                console.log("So the thing was lesser so, ..."+currentDeduction);
+                modifiedDistributedPoints.splice(ptr2,1);
+                ptr2--;
+            }
+            
+            remainingPoints-=currentDeduction;
+            console.log("remainingPoints = ",remainingPoints);
+            currentDeduction*=-1;
+            //remainingPoints=reqpoints-tempPoints;
+            if(deductedPoints[currentPayer["payer"]])
+                deductedPoints[currentPayer["payer"]]-=currentDeduction;
+            else
+                deductedPoints[currentPayer["payer"]]=currentDeduction;
+            ptr++;
+            ptr2++;
+            
+            if(remainingPoints<=0)
+            {
+                distributedPoints=modifiedDistributedPoints;
+                for(var i in totalPoints)
+                {
+                    if(deductedPoints[i])
+                        totalPoints[i]+=deductedPoints[i];
+                }
+                res.send(deductedPoints);
+                console.log(distributedPoints);
+                console.log(totalPoints);
+            }
+        }        
     }
 
 });
