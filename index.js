@@ -5,26 +5,36 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-totalPoints=[];
+totalPoints={};
 distributedPoints=[];
 
 app.post('/addPoints', (req, res)=>{
     record=req.body;
-    var found=false;
+    //var found=false;
     distributedPoints.push(record);
-        totalPoints.forEach(u => 
+        /* totalPoints.forEach(u => 
             {
                 if(u.payer==record.payer)
                 {
                     u.points+=record.points;
                     found=true;
                 }
-            });
+            }); */
 
-        if(found==false)
+        if(totalPoints[record.payer])
+        {
+            totalPoints[record.payer]+=record.points;
+        }
+        else
+        {
+            totalPoints[record.payer]=record.points;
+        }
+
+       /*  if(found==false)
         {
             totalPoints.push(record);
-        }
+        } */
+
     console.log(totalPoints);
     console.log(distributedPoints);
     res.send(totalPoints);  
