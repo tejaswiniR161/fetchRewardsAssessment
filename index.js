@@ -88,7 +88,25 @@ app.post('/addPoints', (req, res)=>{
 
     //console.log(record.time);
     //var found=false;
-    distributedPoints.push(record);
+    if(record.points>=0)
+        distributedPoints.push(record);
+    else
+    {
+        distributedPoints= distributedPoints.sort((a,b)=> { return new Date(b.time) - new Date(a.time) });
+        var updated=false;
+        var ptr=0;
+        while(updated==false || ptr<distributedPoints.length)
+        {
+            console.log("ptr thing here --- "+distributedPoints[ptr]);
+            if(distributedPoints[ptr]["payer"]==record.payer)
+            {
+                distributedPoints[ptr]["points"]+=record.points;
+                distributedPoints[ptr]["time"]=record.time;
+                updated=true;
+                ptr++;
+            }
+        }
+    }
         /* totalPoints.forEach(u => 
             {
                 if(u.payer==record.payer)
@@ -111,6 +129,7 @@ app.post('/addPoints', (req, res)=>{
         {
             totalPoints.push(record);
         } */
+    console.log(distributedPoints);
     res.send(totalPoints);  
 });
 
