@@ -54,9 +54,26 @@ app.post('/deductPoints',(req,res)=>{
 
             if(remaining<=0)
             {
-                res.send(deductedJSON);
                 console.dir(distributedPoints, { depth: null });
                 console.log("remaining logs = "+distributedPoints);
+                totalPoints={};
+                for(var j=0;j<distributedPoints.length;j++)
+                {
+                    if(distributedPoints[j].points==0)
+                    {
+                        distributedPoints.splice(j,1);
+                        j--;
+                    }
+                    else
+                    {
+                        if(totalPoints[distributedPoints[j].payer])
+                            totalPoints[distributedPoints[j].payer]+=distributedPoints[j].points;
+                        else
+                            totalPoints[distributedPoints[j].payer]=distributedPoints[j].points;
+                    }
+                }
+                console.dir(distributedPoints, { depth: null });
+                res.send(deductedJSON);
                 break;
             }
 
