@@ -30,4 +30,9 @@ app.post('/addPoints', (req, res)=>{
     res.send(totalPoints);  
 });
 
+
+app.get('/getPoints',(req,res)=>{
+    res.send(totalPoints);
+});
+
 app.listen(3000);
