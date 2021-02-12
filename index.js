@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require("body-parser");
 var cors=require("cors");
 var moment=require("moment");
+
 var app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -28,6 +29,8 @@ app.post('/deductPoints',(req,res)=>{
     else
     {
         distributedPoints= distributedPoints.sort((a,b)=> { return new Date(a.time) - new Date(b.time) });
+        console.log("sorted list - - - ");
+        console.dir(distributedPoints, { depth: null });
         remaining=reqpoints;
         deductedJSON={};
         for(var i=0;i<distributedPoints.length;i++)
@@ -56,7 +59,12 @@ app.post('/deductPoints',(req,res)=>{
             {
                 console.dir(distributedPoints, { depth: null });
                 console.log("remaining logs = "+distributedPoints);
-                totalPoints={};
+                //totalPoints={};
+                for(var k in totalPoints)
+                {
+                    totalPoints[k]=0;
+                }
+                
                 for(var j=0;j<distributedPoints.length;j++)
                 {
                     if(distributedPoints[j].points==0)
