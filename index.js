@@ -5,8 +5,29 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post('/addPoints', function(req, res){
-   res.send("Hello! Let's build this API!");
+totalPoints=[];
+distributedPoints=[];
+
+app.post('/addPoints', (req, res)=>{
+    record=req.body;
+    var found=false;
+    distributedPoints.push(record);
+        totalPoints.forEach(u => 
+            {
+                if(u.payer==record.payer)
+                {
+                    u.points+=record.points;
+                    found=true;
+                }
+            });
+
+        if(found==false)
+        {
+            totalPoints.push(record);
+        }
+    console.log(totalPoints);
+    console.log(distributedPoints);
+    res.send(totalPoints);  
 });
 
 app.listen(3000);
